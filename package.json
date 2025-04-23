@@ -1,0 +1,23 @@
+{
+  "name": "cypress",
+  "version": "1.0.0",
+  "description": "Cypress Automation - E2E",
+  "homepage": "https://github.com/yeswanthindana/cypressE2E#readme",
+  "bugs": {
+    "url": "https://github.com/yeswanthindana/cypressE2E/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeswanthindana/cypressE2E.git"
+  },
+  "license": "ISC",
+  "author": "Yesh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cypress": "^14.3.2"
+  }
+}
