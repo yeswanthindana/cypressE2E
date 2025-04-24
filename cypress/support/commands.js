@@ -34,16 +34,16 @@ Cypress.Commands.add('Login',(email,password)=>
 {
 
     
-    cypress.get(Cypress.env('loginurl')).click()
-    cypress.get('#input-email').type(email);
-    cypress.get('#input-password').type(password);
-    cypress.get('input[value="Login"]').click();
+    cy.visit(Cypress.env('loginurl'));
+    cy.get('#input-email').type(email);
+    cy.get('#input-password').type(password);
+    cy.get('input[value="Login"]').click();
 
 })
 
 Cypress.Commands.add('Logout',()=>
 {
-    cypress.get('.list-inline > .dropdown > .dropdown-toggle').click();
-    cypress.get('a[href="https://naveenautomationlabs.com/opencart/index.php?route=account/logout"]').click();
+    cy.get('.list-inline > .dropdown > .dropdown-toggle').click();
+    cy.get('a[href="https://naveenautomationlabs.com/opencart/index.php?route=account/logout"]').click();
 }
 )

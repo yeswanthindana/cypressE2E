@@ -9,20 +9,31 @@ const lp = new Loginpage();
 const pp = new Prodpage();
 
 
-import logindata from '../../fixtures/logindata.json'
+import logindata from '../../fixtures/logindata.json'       
+
+
+
 
 describe('Prod page tests', () => 
-    {
+    {   
+
+        before( ()=>
+            {
+                cy.Login(logindata.email,logindata.password)
+            }
+        
+            )
+
         it('Prod functionality', () => {
 
-            hp.visitHomepage();
-            hp.clickonMyaccount();
-            hp.clickonLogin();
+            // hp.visitHomepage();
+            // hp.clickonMyaccount();
+            // hp.clickonLogin();
 
-            cy.url().should('eq',Cypress.env('loginurl'));
-            lp.enterUsername(logindata.email)
-            lp.enterPassword(logindata.password);
-            lp.clickLogin();
+            // cy.url().should('eq',Cypress.env('loginurl'));
+            // lp.enterUsername(logindata.email)
+            // lp.enterPassword(logindata.password);
+            // lp.clickLogin();
 
 
             pp.enterProductName('Samsung SyncMaster')
@@ -38,6 +49,16 @@ describe('Prod page tests', () =>
      
         }
     )
-    }  
-) 
+
+    
+        after( () =>
+        {
+        cy.Logout()
+        }
+    )
+    }
+    )
+
+
+
     
