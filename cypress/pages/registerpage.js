@@ -44,7 +44,7 @@ export class Registerpage {
     }
   
     openURL() {
-      cy.visit(Cypress.env('url'));
+      cy.visit(Cypress.env('baseurl'));
     }
   
   }

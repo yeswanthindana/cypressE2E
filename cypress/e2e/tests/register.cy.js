@@ -1,14 +1,20 @@
 import {Registerpage } from "../../pages/registerpage"
-
+import {Homepage} from '../../pages/homepage'
 
 const rp = new Registerpage()
+const hp = new Homepage();
+
 import registerdata from '../../fixtures/registerdata.json'
 
  describe('testautomation',()=>
     {
         it('register flow', ()=>
         {
-            rp.openURL()
+            hp.visitHomepage();
+            hp.clickonMyaccount();
+            hp.clickonRegister();
+            cy.url().should('eq',Cypress.env('registerurl'))
+            
             rp.enterFirstName(registerdata.firstName)
             rp.enterLastName(registerdata.lastName)
             rp.enterEmail(registerdata.email)

@@ -23,3 +23,27 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('Home page',()=>
+    {
+        cypress.visit(baseenv.url);
+    }
+)
+
+Cypress.Commands.add('Login',(email,password)=>
+{
+
+    
+    cypress.get(Cypress.env('loginurl')).click()
+    cypress.get('#input-email').type(email);
+    cypress.get('#input-password').type(password);
+    cypress.get('input[value="Login"]').click();
+
+})
+
+Cypress.Commands.add('Logout',()=>
+{
+    cypress.get('.list-inline > .dropdown > .dropdown-toggle').click();
+    cypress.get('a[href="https://naveenautomationlabs.com/opencart/index.php?route=account/logout"]').click();
+}
+)
