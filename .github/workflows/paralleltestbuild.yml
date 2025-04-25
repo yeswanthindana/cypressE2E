@@ -47,14 +47,19 @@ jobs:
         run: |
               echo "const nodemailer = require('nodemailer');
               const fs = require('fs');
-    
-              const reportPath = './cypress/reports/html/mochawesome.html';
-    
-              if (!fs.existsSync(reportPath)) {
-                console.error('Report not found at: ' + reportPath);
+              const path = require('path');
+          
+              const reportDir = './cypress/reports/html';
+              const htmlFiles = fs.readdirSync(reportDir).filter(file => file.endsWith('.html'));
+          
+              if (htmlFiles.length === 0) {
+                console.error('No HTML report file found in ' + reportDir);
                 process.exit(1);
               }
-    
+          
+              const reportFile = htmlFiles[0];
+              const reportPath = path.join(reportDir, reportFile);
+          
               const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -62,29 +67,29 @@ jobs:
                   pass: process.env.EMAIL_PASS
                 }
               });
-    
+          
               const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: 'indanayeswanth@gmail.com',
                 subject: 'Cypress Test Results - ${{ github.job }}',
-                text: 'Cypress test execution completed for job: ${{ github.job }}. See attached report.',
+                text: 'Test execution completed. Report file: ' + reportFile,
                 attachments: [
                   {
-                    filename: 'mochawesome.html',
+                    filename: reportFile,
                     path: reportPath
                   }
                 ]
               };
-    
+          
               transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
-                  console.error('Email Error:', error);
+                  console.error('Error sending email:', error);
                   process.exit(1);
                 } else {
-                  console.log('Email sent:', info.response);
+                  console.log('Email sent: ' + info.response);
                 }
               });" > send-email.js
-    
+            
       - name: Send Email Notification with Cypress Report
         if: always()
         run: |
