@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Adjust according to your environment
+          node-version: '18'  # Adjust according to your environment
 
       - name: Install dependencies
         run: |
@@ -83,15 +83,7 @@ jobs:
           SLACK_USERNAME: Yesh
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
 
-      # Send Email Notification with Cypress Report
-      - name: Send Email Notification with Cypress Report
-        if: always()  
-        run: |
-          npm install nodemailer
-          node send-email.js
-        env:
-          EMAIL_USER: ${{ secrets.EMAIL_ID }}
-          EMAIL_PASS: ${{ secrets.PASSWORD }}
+     
 
       # Create the email sending script
       - name: Create Email Sending Script
@@ -103,8 +95,8 @@ jobs:
           const transporter = nodemailer.createTransport({
             service: 'gmail',  # You can replace this with SendGrid or another SMTP service
             auth: {
-              user: process.env.EMAIL_id,
-              pass: process.env.PASSWORD
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASS
             }
           });
 
@@ -129,3 +121,14 @@ jobs:
             }
           });
           " > send-email.js
+
+
+   # Send Email Notification with Cypress Report
+      - name: Send Email Notification with Cypress Report
+        if: always()  
+        run: |
+          npm install nodemailer
+          node send-email.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_ID }}
+          EMAIL_PASS: ${{ secrets.PASSWORD }}
