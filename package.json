@@ -16,8 +16,9 @@
   "main": "index.js",
   "scripts": {
     "test_prodpageE2E": "npx cypress run --spec cypress/e2e/tests/prodpage.cy.js",
-    "test_registertest" : "npx cypress run --spec cypress/e2e/tests/register.cy.js"
-  },
+    "test_registertest" : "npx cypress run --spec cypress/e2e/tests/register.cy.js",
+    "test_prodpageE2E_chrome" : "npx cypress run --spec cypress/e2e/tests/prodpage.cy.js --browser chrome"
+    },
   "dependencies": {
     "cypress": "^14.3.2"
   },
