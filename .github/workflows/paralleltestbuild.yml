@@ -12,6 +12,12 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           command : npm run test_prodpageE2E
+
+      - name: Cypress report
+        uses: actions/upload-artifact@v4
+        with:
+              name: Mochaawesome-report
+              path: cypress/reports/html
   register-run:
     runs-on: ubuntu-24.04
     steps:
@@ -25,6 +31,7 @@ jobs:
           command : npm run test_registertest
 
       - name: Cypress report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
             name: Mochaawesome-report

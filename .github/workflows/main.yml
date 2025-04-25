@@ -10,3 +10,21 @@ jobs:
       # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v6
+        with:
+          command : npm run test_prodpageE2E
+      - name: Cypress report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+              name: Mochaawesome-report
+              path: cypress/reports/html
+      - name : Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: general
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_ICON: https://github.com/rtCamp.png?size=54
+          SLACK_MESSAGE: 'Test Automation report https://github.com/yeswanthindana/cypressE2E/actions/runs/{{github.run_id}}'
+          SLACK_TITLE: Cypress Web Test
+          SLACK_USERNAME: Yesh
+          SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}
