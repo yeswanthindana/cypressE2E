@@ -45,8 +45,7 @@ jobs:
 
       - name: Create Email Sending Script
         run: |
-              echo "
-              const nodemailer = require('nodemailer');
+              echo "const nodemailer = require('nodemailer');
               const fs = require('fs');
     
               const reportPath = './cypress/reports/html/mochawesome.html';
@@ -68,7 +67,7 @@ jobs:
                 from: process.env.EMAIL_USER,
                 to: 'indanayeswanth@gmail.com',
                 subject: 'Cypress Test Results - ${{ github.job }}',
-                text: 'Cypress test execution completed for job: ${{ github.job }}.\n\nPlease find the attached HTML report.',
+                text: 'Cypress test execution completed for job: ${{ github.job }}. See attached report.',
                 attachments: [
                   {
                     filename: 'mochawesome.html',
@@ -84,9 +83,8 @@ jobs:
                 } else {
                   console.log('Email sent:', info.response);
                 }
-              });
-              " > send-email.js
-
+              });" > send-email.js
+    
       - name: Send Email Notification with Cypress Report
         if: always()
         run: |
@@ -122,7 +120,7 @@ jobs:
         if: always()  # Ensures this step runs regardless of the test result
         uses: actions/upload-artifact@v4
         with:
-          name: Mochaawesome-report
+          name: Register-report
           path: cypress/reports/html
    
       - name: Send Slack Notification
