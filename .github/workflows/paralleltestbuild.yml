@@ -43,48 +43,6 @@ jobs:
             SLACK_USERNAME: Yesh
             SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
 
-  # Register Tests
-  register-run:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'  # Adjust according to your environment
-
-      - name: Install dependencies
-        run: |
-          npm install
-
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
-        with:
-          command: npm run test_registertest
-
-      - name: Upload Cypress Report
-        if: always()  # Ensures this step runs regardless of the test result
-        uses: actions/upload-artifact@v4
-        with:
-          name: Mochaawesome-report
-          path: cypress/reports/html/registerTest
-
-   
-      - name: Send Slack Notification
-        if: always()  # Ensure this runs even if tests fail
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_COLOR: ${{ job.status }}  
-          SLACK_ICON: https://github.com/rtCamp.png?size=54
-          SLACK_MESSAGE: 'Test Automation report: https://github.com/yeswanthindana/cypressE2E/actions/runs/${{ github.run_id }}'
-          SLACK_TITLE: Cypress Web Test
-          SLACK_USERNAME: Yesh
-          SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
-
-     
-
       # Create the email sending script
       - name: Create Email Sending Script
         run: |
@@ -132,3 +90,45 @@ jobs:
         env:
           EMAIL_USER: ${{ secrets.EMAIL_ID }}
           EMAIL_PASS: ${{ secrets.PASSWORD }}
+
+  # Register Tests
+  register-run:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'  # Adjust according to your environment
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run test_registertest
+
+      - name: Upload Cypress Report
+        if: always()  # Ensures this step runs regardless of the test result
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mochaawesome-report
+          path: cypress/reports/html
+   
+      - name: Send Slack Notification
+        if: always()  # Ensure this runs even if tests fail
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: ${{ job.status }}  
+          SLACK_ICON: https://github.com/rtCamp.png?size=54
+          SLACK_MESSAGE: 'Test Automation report: https://github.com/yeswanthindana/cypressE2E/actions/runs/${{ github.run_id }}'
+          SLACK_TITLE: Cypress Web Test
+          SLACK_USERNAME: Yesh
+          SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
+
+     
+
