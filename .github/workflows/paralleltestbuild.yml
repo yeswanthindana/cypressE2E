@@ -72,7 +72,7 @@ jobs:
                 from: process.env.EMAIL_USER,
                 to: 'indanayeswanth@gmail.com',
                 subject: 'Cypress Test Results - ${{ github.job }}',
-                text: 'Test execution completed. Report file: ' + reportFile,
+                text: 'Test execution completed in CI/CD Pipeline.  Report file: ' + reportFile,
                 attachments: [
                   {
                     filename: reportFile,
@@ -128,7 +128,7 @@ jobs:
           name: Register-report
           path: cypress/reports/html
    
-          
+
       - name: Send Slack Notification
         if: always()  # Ensure this runs even if tests fail
         uses: rtCamp/action-slack-notify@v2
@@ -139,6 +139,64 @@ jobs:
           SLACK_TITLE: Cypress Web Test
           SLACK_USERNAME: Yesh
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
+
+      - name: Create Email Sending Script
+        run: |
+                echo "const nodemailer = require('nodemailer');
+                const fs = require('fs');
+                const path = require('path');
+            
+                const reportDir = './cypress/reports/html';
+                const htmlFiles = fs.readdirSync(reportDir).filter(file => file.endsWith('.html'));
+            
+                if (htmlFiles.length === 0) {
+                  console.error('No HTML report file found in ' + reportDir);
+                  process.exit(1);
+                }
+            
+                const reportFile = htmlFiles[0];
+                const reportPath = path.join(reportDir, reportFile);
+            
+                const transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                  }
+                });
+            
+                const mailOptions = {
+                  from: process.env.EMAIL_USER,
+                  to: 'indanayeswanth@gmail.com',
+                  subject: 'Cypress Test Results - ${{ github.job }}',
+                  text: 'Test execution completed in CI/CD Pipeline.  Report file: ' + reportFile,
+                  attachments: [
+                    {
+                      filename: reportFile,
+                      path: reportPath
+                    }
+                  ]
+                };
+            
+                transporter.sendMail(mailOptions, (error, info) => {
+                  if (error) {
+                    console.error('Error sending email:', error);
+                    process.exit(1);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                  }
+                });" > send-email.js
+              
+      - name: Send Email Notification with Cypress Report
+        if: always()
+        run: |
+                npm install nodemailer
+                node send-email.js
+        env:
+                EMAIL_USER:  ${{ secrets.EMAIL_ID }}
+                EMAIL_PASS: ${{ secrets.PASSWORD }}
+        
+  
 
      
 
