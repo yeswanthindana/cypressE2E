@@ -43,53 +43,59 @@ jobs:
             SLACK_USERNAME: Yesh
             SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
 
-      # Create the email sending script
       - name: Create Email Sending Script
         run: |
-          echo "
-          const nodemailer = require('nodemailer');
-          const fs = require('fs');
-
-          const transporter = nodemailer.createTransport({
-            service: 'gmail',  
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS
-            }
-          });
-
-          const mailOptions = {
-            from: process.env.EMAIL_ID,
-            to: 'indanayeswanth@gmail.com', 
-            subject: 'Cypress Test Results',
-            text: 'The Cypress test execution has completed. See the attached report.',
-            attachments: [
-              {
-                filename: 'mochawesome-report.html',
-                path: './cypress/reports/html/mochawesome-report.html'  # Path to your Cypress HTML report
+              echo "
+              const nodemailer = require('nodemailer');
+              const fs = require('fs');
+    
+              const reportPath = './cypress/reports/html/mochawesome.html';
+    
+              if (!fs.existsSync(reportPath)) {
+                console.error('Report not found at: ' + reportPath);
+                process.exit(1);
               }
-            ]
-          };
+    
+              const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                  user: process.env.EMAIL_USER,
+                  pass: process.env.EMAIL_PASS
+                }
+              });
+    
+              const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: 'indanayeswanth@gmail.com',
+                subject: 'Cypress Test Results - ${{ github.job }}',
+                text: 'Cypress test execution completed for job: ${{ github.job }}.\n\nPlease find the attached HTML report.',
+                attachments: [
+                  {
+                    filename: 'mochawesome.html',
+                    path: reportPath
+                  }
+                ]
+              };
+    
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.error('Email Error:', error);
+                  process.exit(1);
+                } else {
+                  console.log('Email sent:', info.response);
+                }
+              });
+              " > send-email.js
 
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.log('Error:', error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
-          " > send-email.js
-
-
-   # Send Email Notification with Cypress Report
       - name: Send Email Notification with Cypress Report
-        if: always()  
+        if: always()
         run: |
-          npm install nodemailer
-          node send-email.js
+              npm install nodemailer
+              node send-email.js
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_ID }}
-          EMAIL_PASS: ${{ secrets.PASSWORD }}
+              EMAIL_USER:  ${{ secrets.EMAIL_ID }}
+              EMAIL_PASS: ${{ secrets.PASSWORD }}
+      
 
   # Register Tests
   register-run:
