@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  
+          node-version: '18'  
 
       - name: Install dependencies
         run: |
@@ -93,7 +93,7 @@ jobs:
           const fs = require('fs');
 
           const transporter = nodemailer.createTransport({
-            service: 'gmail',  # You can replace this with SendGrid or another SMTP service
+            service: 'gmail',  
             auth: {
               user: process.env.EMAIL_USER,
               pass: process.env.EMAIL_PASS
@@ -102,7 +102,7 @@ jobs:
 
           const mailOptions = {
             from: process.env.EMAIL_ID,
-            to: 'indanayeswanth@gmail.com',  # Replace with your email or use GitHub Secrets for recipient email
+            to: 'indanayeswanth@gmail.com', 
             subject: 'Cypress Test Results',
             text: 'The Cypress test execution has completed. See the attached report.',
             attachments: [
