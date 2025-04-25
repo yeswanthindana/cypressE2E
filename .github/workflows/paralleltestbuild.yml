@@ -1,48 +1,131 @@
 name: OpenCart Tests
-on: push
+
+on:
+  push:
+    branches:
+      - main  
+
 jobs:
+  # Add-to-cart Tests
   Add-to-cart-run:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          command : npm run test_prodpageE2E
+          command: npm run test_prodpageE2E
 
-      - name: Cypress report
+      - name: Upload Cypress Report
         uses: actions/upload-artifact@v4
         with:
-              name: Mochaawesome-report
-              path: cypress/reports/html
+          name: Mochaawesome-report
+          path: cypress/reports/html  
+      - name: Send Slack Notification
+        if: always()  # Ensure this runs even if tests fail
+        uses: rtCamp/action-slack-notify@v2
+        env:
+            SLACK_COLOR: ${{ job.status }}  
+            SLACK_ICON: https://github.com/rtCamp.png?size=54
+            SLACK_MESSAGE: 'Test Automation report: https://github.com/yeswanthindana/cypressE2E/actions/runs/${{ github.run_id }}'
+            SLACK_TITLE: Cypress Web Test
+            SLACK_USERNAME: Yesh
+            SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
+
+  # Register Tests
   register-run:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Adjust according to your environment
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          command : npm run test_registertest
+          command: npm run test_registertest
 
-      - name: Cypress report
-        if: always()
+      - name: Upload Cypress Report
+        if: always()  # Ensures this step runs regardless of the test result
         uses: actions/upload-artifact@v4
         with:
-            name: Mochaawesome-report
-            path: cypress/reports/html
-      - name : Slack Notification
-        if: always()
+          name: Mochaawesome-report
+          path: cypress/reports/html  
+
+   
+      - name: Send Slack Notification
+        if: always()  # Ensure this runs even if tests fail
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_COLOR: ${{ job.status }}  
           SLACK_ICON: https://github.com/rtCamp.png?size=54
-          SLACK_MESSAGE: 'Test Automation report https://github.com/yeswanthindana/cypressE2E/actions/runs/${{github.run_id}}'
+          SLACK_MESSAGE: 'Test Automation report: https://github.com/yeswanthindana/cypressE2E/actions/runs/${{ github.run_id }}'
           SLACK_TITLE: Cypress Web Test
           SLACK_USERNAME: Yesh
-          SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}
+          SLACK_WEBHOOK: ${{ secrets.WEBHOOK }}  
+
+      # Send Email Notification with Cypress Report
+      - name: Send Email Notification with Cypress Report
+        if: always()  
+        run: |
+          npm install nodemailer
+          node send-email.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_ID }}
+          EMAIL_PASS: ${{ secrets.PASSWORD }}
+
+      # Create the email sending script
+      - name: Create Email Sending Script
+        run: |
+          echo "
+          const nodemailer = require('nodemailer');
+          const fs = require('fs');
+
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',  # You can replace this with SendGrid or another SMTP service
+            auth: {
+              user: process.env.EMAIL_id,
+              pass: process.env.PASSWORD
+            }
+          });
+
+          const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: 'indanayeswanth@gmail.com',  # Replace with your email or use GitHub Secrets for recipient email
+            subject: 'Cypress Test Results',
+            text: 'The Cypress test execution has completed. See the attached report.',
+            attachments: [
+              {
+                filename: 'mochawesome-report.html',
+                path: './cypress/reports/html/mochawesome-report.html'  # Path to your Cypress HTML report
+              }
+            ]
+          };
+
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log('Error:', error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+          " > send-email.js

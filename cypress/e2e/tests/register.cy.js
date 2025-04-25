@@ -1,10 +1,11 @@
 import {Registerpage } from "../../pages/registerpage"
 import {Homepage} from '../../pages/homepage'
+import { faker } from '@faker-js/faker';
 
 const rp = new Registerpage()
 const hp = new Homepage();
 
-import registerdata from '../../fixtures/registerdata.json'
+import registerdata from '../../fixtures/registerdata.js'
 
  describe('testautomation',()=>
     {
